@@ -18,24 +18,24 @@ public class FieldGenerator
     {
         GeneratePerfectLabirint();
 
-        _map.PrintMap();
+        //_map.Print();
 
-        Console.ReadLine();
-        Console.Clear();
+        //Console.ReadLine();
+        //Console.Clear();
 
         RemoveEndNodes(removeEndNodesIterations);
 
-        _map.PrintMap();
+        //_map.Print();
 
-        Console.ReadLine();
-        Console.Clear();
+        //Console.ReadLine();
+        //Console.Clear();
 
         CellularAutomaton(cellularAutomatonIterations);
 
-        _map.PrintMap();
+        //_map.Print();
 
-        Console.ReadLine();
-        Console.Clear();
+        //Console.ReadLine();
+        //Console.Clear();
 
         RemoveEndNodes(removeEndNodesIterations);
 

@@ -9,18 +9,18 @@ public class Program
     public static void Main(string[] args)
     {
         // сгенерировать карту
-        int height = 51, width = 201;
+        int height = 127, width = 401;
         //int height = 31, width = 141;
         var map = new Map(width, height);
         var fieldGenerator = new FieldGenerator(map);
         var removeEndNodesIterations = 4;
         var cellularAutomatonIterations = 5;
-        var biomesSeedCount = 15;
+        var biomesSeedCount = 30;
         var biomesJitter = 1.5;
         map.GenerateField(removeEndNodesIterations, cellularAutomatonIterations);
         map.GenerateStartAndFinish();
         map.GenerateBiomes(biomesSeedCount, biomesJitter);
-        map.PrintMap();
+        map.Print();
 
         Console.ReadLine();
         Console.Clear();
@@ -29,7 +29,7 @@ public class Program
         var mapBfs = new Map(map);
         var mapSolverBfs = new MapSolverBfs(mapBfs);
         mapBfs = mapSolverBfs.Bfs();
-        mapBfs.PrintMap();
+        mapBfs.Print();
 
         Console.ReadLine();
         Console.Clear();
@@ -39,7 +39,7 @@ public class Program
         double g = 1, h = 1;
         var mapSolverAstar = new MapSolverAstar(mapAstar, g, h);
         mapAstar = mapSolverAstar.Astar();
-        mapAstar.PrintMap();
+        mapAstar.Print();
 
         Console.ReadLine();
     }
