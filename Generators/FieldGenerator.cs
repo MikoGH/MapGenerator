@@ -1,20 +1,20 @@
 ﻿using MapGenerator.Enums;
 using MapGenerator.Models;
 
-namespace Labirint;
+namespace MapGenerator.Generators;
 
-public class MapGenerator
+public class FieldGenerator
 {
     private Map _map;
     private Random _random;
 
-    public MapGenerator(int width, int height)
+    public FieldGenerator(Map map)
     {
-        _map = new Map(width, height);
+        _map = map;
         _random = new Random();
     }
 
-    public Map GenerateMap(int removeEndNodesIterations, int cellularAutomatonIterations)
+    public Map GenerateField(int removeEndNodesIterations, int cellularAutomatonIterations)
     {
         GeneratePerfectLabirint();
 

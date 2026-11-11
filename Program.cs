@@ -1,4 +1,6 @@
-﻿using MapGenerator.Models;
+﻿using MapGenerator.Extensions;
+using MapGenerator.Generators;
+using MapGenerator.Models;
 
 namespace Labirint;
 
@@ -9,11 +11,15 @@ public class Program
         // сгенерировать карту
         int height = 51, width = 201;
         //int height = 31, width = 141;
-        var mapGenerator = new MapGenerator(width, height);
+        var map = new Map(width, height);
+        var fieldGenerator = new FieldGenerator(map);
         var removeEndNodesIterations = 4;
         var cellularAutomatonIterations = 5;
-        var map = mapGenerator.GenerateMap(removeEndNodesIterations, cellularAutomatonIterations);
-        map = mapGenerator.GenerateStartAndFinish();
+        var biomesSeedCount = 15;
+        var biomesJitter = 1.5;
+        map.GenerateField(removeEndNodesIterations, cellularAutomatonIterations);
+        map.GenerateStartAndFinish();
+        map.GenerateBiomes(biomesSeedCount, biomesJitter);
         map.PrintMap();
 
         Console.ReadLine();
