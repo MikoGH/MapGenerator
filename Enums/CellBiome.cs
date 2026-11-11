@@ -3,7 +3,6 @@
 public enum CellBiome : byte
 {
     None,
-    //Forest,
     Swamp,
     Desert,
     Dungeon,

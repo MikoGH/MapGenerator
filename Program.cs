@@ -17,9 +17,10 @@ public class Program
         var cellularAutomatonIterations = 5;
         var biomesSeedCount = 30;
         var biomesJitter = 1.5;
-        map.GenerateField(removeEndNodesIterations, cellularAutomatonIterations);
-        map.GenerateStartAndFinish();
-        map.GenerateBiomes(biomesSeedCount, biomesJitter);
+        map.GenerateBiomeSeeds(biomesSeedCount, out var biomeSeeds)
+            .GenerateBiomes(biomeSeeds, biomesJitter)
+            .GenerateField(removeEndNodesIterations, cellularAutomatonIterations)
+            .GenerateStartAndFinish();
         map.Print();
 
         Console.ReadLine();

@@ -21,11 +21,20 @@ public static class MapExtensions
         return fieldGenerator.GenerateStartAndFinish();
     }
 
-    public static Map GenerateBiomes(this Map map, int seedCount, double jitter)
+    public static Map GenerateBiomeSeeds(this Map map, int seedCount, out List<BiomeSeed> biomeSeeds)
     {
         var biomeGenerator = new BiomeGenerator(map);
 
-        return biomeGenerator.GenerateBiomes(seedCount, jitter);
+        biomeSeeds = biomeGenerator.GenerateBiomeSeeds(seedCount);
+
+        return map;
+    }
+
+    public static Map GenerateBiomes(this Map map, List<BiomeSeed> biomeSeeds, double jitter)
+    {
+        var biomeGenerator = new BiomeGenerator(map);
+
+        return biomeGenerator.GenerateBiomes(biomeSeeds, jitter);
     }
 
     public static void Print(this Map map)
