@@ -7,20 +7,6 @@ namespace MapGenerator.Extensions;
 
 public static class MapExtensions
 {
-    public static Map GenerateField(this Map map, int removeEndNodesIterations, int cellularAutomatonIterations)
-    {
-        var fieldGenerator = new FieldGenerator(map);
-
-        return fieldGenerator.GenerateField(removeEndNodesIterations, cellularAutomatonIterations);
-    }
-
-    public static Map GenerateStartAndFinish(this Map map)
-    {
-        var fieldGenerator = new FieldGenerator(map);
-
-        return fieldGenerator.GenerateStartAndFinish();
-    }
-
     public static Map GenerateBiomeSeeds(this Map map, int seedCount, out List<BiomeSeed> biomeSeeds)
     {
         var biomeGenerator = new BiomeGenerator(map);
@@ -36,6 +22,28 @@ public static class MapExtensions
 
         return biomeGenerator.GenerateBiomes(biomeSeeds, jitter);
     }
+
+    public static Map GenerateSkeleton(this Map map, List<BiomeSeed> biomeSeeds)
+    {
+        var biomeSkeletonGenerator = new BiomeSkeletonGenerator(map);
+
+        return biomeSkeletonGenerator.GenerateSkeleton(biomeSeeds);
+    }
+
+    public static Map GenerateField(this Map map, int removeEndNodesIterations, int cellularAutomatonIterations)
+    {
+        var fieldGenerator = new FieldGenerator(map);
+
+        return fieldGenerator.GenerateField(removeEndNodesIterations, cellularAutomatonIterations);
+    }
+
+    public static Map GenerateStartAndFinish(this Map map)
+    {
+        var fieldGenerator = new FieldGenerator(map);
+
+        return fieldGenerator.GenerateStartAndFinish();
+    }
+
 
     public static void Print(this Map map)
     {

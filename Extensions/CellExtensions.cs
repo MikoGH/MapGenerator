@@ -10,4 +10,7 @@ public static class CellExtensions
             return true;
         return false;
     }
+
+    public static double Distance(this Cell cell, Cell otherCell)
+        => Math.Sqrt((cell.X - otherCell.X) * (cell.X - otherCell.X) + (cell.Y - otherCell.Y) * (cell.Y - otherCell.Y));
 }
