@@ -1,7 +1,7 @@
 ﻿using MapGenerator.Enums;
 using MapGenerator.Models;
 
-namespace MapGenerator.Generators;
+namespace MapGenerator.MapGeneration.Generators;
 
 public class FieldGenerator
 {

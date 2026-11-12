@@ -1,7 +1,7 @@
 ﻿using MapGenerator.Enums;
 using MapGenerator.Models;
 
-namespace Labirint;
+namespace MapGenerator.Solvers;
 
 public class MapSolverBfs
 {

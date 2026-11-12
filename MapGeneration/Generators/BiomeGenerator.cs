@@ -1,28 +1,29 @@
-﻿using MapGenerator.Enums;
+﻿using MapGenerator.Configs;
+using MapGenerator.Enums;
 using MapGenerator.Extensions;
+using MapGenerator.MapGeneration.Generators.Abstractions;
 using MapGenerator.Models;
+using Microsoft.Extensions.Options;
 using Prism.Core.Tests.Helpers;
 
-namespace MapGenerator.Generators;
+namespace MapGenerator.MapGeneration.Generators;
 
-public class BiomeGenerator
+public class BiomeGenerator : IBiomeGenerator
 {
-    private readonly Map _map;
     private readonly Random _random;
 
-    public BiomeGenerator(Map map)
+    public BiomeGenerator(IOptions<MapGenerationConfig> config)
     {
-        _map = map;
-        _random = new Random();
+        _random = new Random(config.Value.Seed);
     }
 
-    public List<BiomeSeed> GenerateBiomeSeeds(int seedCount)
+    public List<BiomeSeed> GenerateBiomeSeeds(Map map, int seedCount)
     {
         var seeds = new List<BiomeSeed>(seedCount);
 
         for (int i = 0; i < seedCount; i++)
         {
-            var cell = RandomGenerator.GenerateRandomPoint(_random, 1, _map.Width - 2, 1, _map.Height - 2);
+            var cell = RandomGenerator.GenerateRandomPoint(_random, 1, map.Width - 2, 1, map.Height - 2);
             CellBiome biome;
             do
             {
@@ -34,15 +35,15 @@ public class BiomeGenerator
         return seeds;
     }
 
-    public Map GenerateBiomes(List<BiomeSeed> biomeSeeds, double jitter)
+    public Map GenerateBiomes(Map map, List<BiomeSeed> biomeSeeds, double jitter)
     {
-        var jitterMap = new double[_map.Height, _map.Width];
+        var jitterMap = new double[map.Height, map.Width];
 
         var cellsQueue = new PriorityQueue<(Cell, CellBiome), double>();
 
-        for (int i = 0; i < _map.Height; i++)
+        for (int i = 0; i < map.Height; i++)
         {
-            for (int j = 0; j < _map.Width; j++)
+            for (int j = 0; j < map.Width; j++)
             {
                 jitterMap[i, j] = (_random.NextDouble() - 0.5) * jitter;
             }
@@ -50,23 +51,23 @@ public class BiomeGenerator
 
         foreach (var biomeSeed in biomeSeeds)
         {
-            _map.Biomes[biomeSeed.Cell.Y, biomeSeed.Cell.X] = biomeSeed.Biome;
-            PushNeighbors(biomeSeed.Cell, biomeSeed.Biome, jitterMap, cellsQueue, 0.0);
+            map.Biomes[biomeSeed.Cell.Y, biomeSeed.Cell.X] = biomeSeed.Biome;
+            PushNeighbors(map, biomeSeed.Cell, biomeSeed.Biome, jitterMap, cellsQueue, 0.0);
         }
 
         while (cellsQueue.TryDequeue(out var item, out double cost))
         {
             var (cell, biome) = item;
-            if (_map.Biomes[cell.Y, cell.X] != CellBiome.None)
+            if (map.Biomes[cell.Y, cell.X] != CellBiome.None)
                 continue;
-            _map.Biomes[cell.Y, cell.X] = biome;
-            PushNeighbors(cell, biome, jitterMap, cellsQueue, cost);
+            map.Biomes[cell.Y, cell.X] = biome;
+            PushNeighbors(map, cell, biome, jitterMap, cellsQueue, cost);
         }
 
-        return _map;
+        return map;
     }
 
-    private void PushNeighbors(Cell cell, CellBiome biome, double[,] jitterMap, PriorityQueue<(Cell, CellBiome), double> cellsQueue, double cost)
+    private void PushNeighbors(Map map, Cell cell, CellBiome biome, double[,] jitterMap, PriorityQueue<(Cell, CellBiome), double> cellsQueue, double cost)
     {
         var adjacentCells = new Cell[4]
         {
@@ -78,9 +79,9 @@ public class BiomeGenerator
 
         foreach (var adjacentCell in adjacentCells)
         {
-            if (!adjacentCell.IsInsideBounds(_map))
+            if (!adjacentCell.IsInsideBounds(map))
                 continue;
-            if (_map.Biomes[adjacentCell.Y, adjacentCell.X] != CellBiome.None)
+            if (map.Biomes[adjacentCell.Y, adjacentCell.X] != CellBiome.None)
                 continue;
             //var dist = Math.Sqrt((adjacentCell.X - startCell.X) * (adjacentCell.X - startCell.X) + (adjacentCell.Y - startCell.Y) * (adjacentCell.Y - startCell.Y))
             //            + jitterMap[adjacentCell.Y, adjacentCell.X];

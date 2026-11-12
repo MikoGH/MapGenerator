@@ -1,37 +1,34 @@
-﻿using MapGenerator.Enums;
+﻿using MapGenerator.Configs;
+using MapGenerator.Enums;
 using MapGenerator.Extensions;
+using MapGenerator.MapGeneration.Generators.Abstractions;
 using MapGenerator.Models;
+using Microsoft.Extensions.Options;
 
-namespace MapGenerator.Generators;
+namespace MapGenerator.MapGeneration.Generators;
 
-public class BiomeSkeletonGenerator
+public class SkeletonGenerator : ISkeletonGenerator
 {
-    private readonly Map _map;
     private readonly Random _random;
-    private readonly bool[,] _protected;
 
-    public bool[,] Protected => _protected;
-
-    public BiomeSkeletonGenerator(Map map, int? seed = null)
+    public SkeletonGenerator(IOptions<MapGenerationConfig> config)
     {
-        _map = map;
-        _random = seed.HasValue ? new Random(seed.Value) : new Random();
-        _protected = new bool[map.Height, map.Width];
+        _random = new Random(config.Value.Seed);
     }
 
-    public Map GenerateSkeleton(List<BiomeSeed> biomeSeeds)
+    public Map GenerateSkeleton(Map map, List<BiomeSeed> biomeSeeds)
     {
-        if (biomeSeeds.Count < 2) return _map;
+        if (biomeSeeds.Count < 2) return map;
 
-        var edges = BuildMST(biomeSeeds);
+        var edges = BuildMST(map, biomeSeeds);
 
         foreach (var (fromBiome, toBiome) in edges)
-            CarveCorridor(fromBiome.Cell, toBiome.Cell);
+            CarveCorridor(map, fromBiome.Cell, toBiome.Cell);
 
-        return _map;
+        return map;
     }
 
-    private List<(BiomeSeed From, BiomeSeed To)> BuildMST(List<BiomeSeed> biomeSeeds)
+    private List<(BiomeSeed From, BiomeSeed To)> BuildMST(Map map, List<BiomeSeed> biomeSeeds)
     {
         var edges = new List<(BiomeSeed, BiomeSeed)>();
         var visited = new HashSet<BiomeSeed>();
@@ -66,27 +63,25 @@ public class BiomeSkeletonGenerator
         return edges;
     }
 
-    private void CarveCorridor(Cell from, Cell to)
+    private void CarveCorridor(Map map, Cell from, Cell to)
     {
         int x = from.X, y = from.Y;
 
         while (x != to.X || y != to.Y)
         {
-            CarveCell(x, y);
+            CarveCell(map, x, y);
 
             bool moveX = x != to.X && (y == to.Y || _random.NextDouble() < 0.5);
             if (moveX) x += Math.Sign(to.X - x);
             else y += Math.Sign(to.Y - y);
         }
-        CarveCell(to.X, to.Y);
+        CarveCell(map, to.X, to.Y);
     }
 
-    private void CarveCell(int x, int y)
+    private void CarveCell(Map map, int x, int y)
     {
-        if (x < 1 || y < 1 || x >= _map.Width - 1 || y >= _map.Height - 1) return;
-        _map.Field[y, x] = CellType.Empty;
-        _protected[y, x] = true;
-        //_map.Marks[y, x] = CellMark.Corridor; // добавьте значение в enum
+        if (x < 1 || y < 1 || x >= map.Width - 1 || y >= map.Height - 1)
+            return;
+        map.Field[y, x] = CellType.Empty;
     }
-
 }
