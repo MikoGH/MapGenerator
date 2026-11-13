@@ -42,7 +42,7 @@ public sealed class MapGenerationPipeline : IMapGenerationPipeline
 
         foreach (var biome in cellsByBiome.Keys)
         {
-            if (biome != CellBiome.Lava && biome != CellBiome.Ice)
+            if (!_config.BiomeConfigs.ContainsKey(biome))
                 continue;  // TMP
             var strategy = _registry.For(biome);
             var currentBiomeSeeds = biomeSeeds.Where(x => x.Biome == biome).Select(x => x.Cell).ToList();
