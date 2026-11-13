@@ -1,4 +1,5 @@
 ﻿using MapGenerator.Configs;
+using MapGenerator.Enums;
 using MapGenerator.MapGeneration.Abstractions;
 using MapGenerator.MapGeneration.Generators.Abstractions;
 using MapGenerator.Models;
@@ -10,19 +11,19 @@ public sealed class MapGenerationPipeline : IMapGenerationPipeline
 {
     private readonly IBiomeGenerator _biomeGenerator;
     private readonly ISkeletonGenerator _skeletonGenerator;
-    //private readonly BiomeStrategyRegistry _registry;
+    private readonly IBiomeStrategyRegistry _registry;
     private readonly MapGenerationConfig _config;
     private readonly Random _random;
 
     public MapGenerationPipeline(
         IBiomeGenerator biomeGenerator,
         ISkeletonGenerator skeletonGenerator,
-        //BiomeStrategyRegistry registry,
+        IBiomeStrategyRegistry registry,
         IOptions<MapGenerationConfig> config)
     {
         _biomeGenerator = biomeGenerator;
         _skeletonGenerator = skeletonGenerator;
-        //_registry = registry;
+        _registry = registry;
         _config = config.Value;
         _random = new Random(_config.Seed);
     }
@@ -37,19 +38,17 @@ public sealed class MapGenerationPipeline : IMapGenerationPipeline
 
         map = _skeletonGenerator.GenerateSkeleton(map, biomeSeeds);
 
-        //var biomes = map.Biomes.Cast<CellBiome>()
-        //    .Distinct()
-        //    .Where(b => b != CellBiome.None);
+        var cellsByBiome = _biomeGenerator.GetCellsByBiome(map);
 
-        //foreach (var biome in biomes)
-        //{
-        //    var strategy = _registry.For(biome);
-        //    var ctx = new BiomeGenerationContext(
-        //        map, biome, skeleton.Protected,
-        //        new Random(_random.Next()),
-        //        _configs[biome]);
-        //    strategy.Generate(ctx);
-        //}
+        foreach (var biome in cellsByBiome.Keys)
+        {
+            if (biome != CellBiome.Lava && biome != CellBiome.Ice)
+                continue;  // TMP
+            var strategy = _registry.For(biome);
+            var currentBiomeSeeds = biomeSeeds.Where(x => x.Biome == biome).Select(x => x.Cell).ToList();
+            var context = new BiomeGenerationContext(map, biome, _config.BiomeConfigs[biome], currentBiomeSeeds, cellsByBiome[biome]);
+            map = strategy.Generate(context);
+        }
 
         return map;
     }

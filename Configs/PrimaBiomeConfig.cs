@@ -1,3 +1,8 @@
 ﻿namespace MapGenerator.Configs;
 
-public sealed record PrimaBiomeConfig(int RemoveEndNodeIterations, int CellularAutomatonIterations) : BiomeConfig;
+public class PrimaBiomeConfig : BiomeConfig
+{
+    public int RemoveEndNodeIterations { get; set; }
+
+    public int CellularAutomatonIterations { get; set; }
+};

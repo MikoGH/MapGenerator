@@ -12,5 +12,7 @@ public class MapGenerationConfig
 
     public BiomeGenerationConfig BiomeGeneration { get; set; }
 
+    public BiomeConfigRaw BiomeConfigsRaw { get; set; }
+
     public Dictionary<CellBiome, BiomeConfig> BiomeConfigs { get; set; }
 }

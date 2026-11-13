@@ -67,6 +67,25 @@ public class BiomeGenerator : IBiomeGenerator
         return map;
     }
 
+    public Dictionary<CellBiome, List<Cell>> GetCellsByBiome(Map map)
+    {
+        var cellsByBiome = new Dictionary<CellBiome, List<Cell>>();
+
+        for (int y = 0; y < map.Height - 1; y++)
+        {
+            for (int x = 0; x < map.Width - 1; x++)
+            {
+                var biome = map.Biomes[y, x];
+                if (!cellsByBiome.ContainsKey(biome))
+                    cellsByBiome[biome] = new List<Cell>();
+
+                cellsByBiome[biome].Add(new Cell(x, y));
+            }
+        }
+
+        return cellsByBiome;
+    }
+
     private void PushNeighbors(Map map, Cell cell, CellBiome biome, double[,] jitterMap, PriorityQueue<(Cell, CellBiome), double> cellsQueue, double cost)
     {
         var adjacentCells = new Cell[4]
@@ -83,9 +102,7 @@ public class BiomeGenerator : IBiomeGenerator
                 continue;
             if (map.Biomes[adjacentCell.Y, adjacentCell.X] != CellBiome.None)
                 continue;
-            //var dist = Math.Sqrt((adjacentCell.X - startCell.X) * (adjacentCell.X - startCell.X) + (adjacentCell.Y - startCell.Y) * (adjacentCell.Y - startCell.Y))
-            //            + jitterMap[adjacentCell.Y, adjacentCell.X];
-            //cellsQueue.Enqueue((adjacentCell, startCell, biome), dist);
+
             double enterCost = 1.0 + jitterMap[adjacentCell.Y, adjacentCell.X];
             cellsQueue.Enqueue((adjacentCell, biome), cost + enterCost);
         }

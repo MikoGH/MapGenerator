@@ -1,3 +1,3 @@
 ﻿namespace MapGenerator.Configs;
 
-public abstract record BiomeConfig;
+public abstract class BiomeConfig;

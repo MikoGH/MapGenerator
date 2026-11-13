@@ -8,15 +8,16 @@ public sealed class BiomeGenerationContext
 {
     public Map Map { get; }
     public CellBiome Biome { get; }
-    public bool[,] Protected { get; }
-    public Random Random { get; }
     public BiomeConfig Config { get; }
+    public List<Cell> BiomeSeeds { get; }
+    public List<Cell> BiomeCells { get; }
 
-    public BiomeGenerationContext(
-        Map map, CellBiome biome, bool[,] protectedCells,
-        Random random, BiomeConfig config)
+    public BiomeGenerationContext(Map map, CellBiome biome, BiomeConfig config, List<Cell> biomeSeeds, List<Cell> biomeCells)
     {
-        Map = map; Biome = biome; Protected = protectedCells;
-        Random = random; Config = config;
+        Map = map;
+        Biome = biome;
+        Config = config;
+        BiomeSeeds = biomeSeeds;
+        BiomeCells = biomeCells;
     }
 }
